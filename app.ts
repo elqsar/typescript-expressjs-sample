@@ -6,6 +6,8 @@
 import express = require('express');
 import bodyParser = require('body-parser');
 import morgan = require('morgan');
+import cluster = require('cluster');
+import os = require('os');
 
 import UserController = require('./src/user/userController');
 
@@ -24,9 +26,21 @@ class Server {
   listen() {
     this.app.listen(this.port);
   }
+
+  listenCluster() {
+    var cpus = os.cpus().length;
+
+    if(cluster.isMaster) {
+      for(var i = 0; i < cpus; i++) {
+        cluster.fork();
+      }
+    } else {
+      this.app.listen(this.port);
+    }
+  }
 }
 
 var server = new Server();
 server.configure();
-server.listen();
+server.listenCluster();
 
