@@ -42,5 +42,5 @@ class Server {
 
 var server = new Server();
 server.configure();
-server.listenCluster();
+server.listen();
 
